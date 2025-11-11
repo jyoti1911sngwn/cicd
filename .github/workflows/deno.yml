@@ -17,7 +17,8 @@ jobs:
         deno-version: v1.x
 
     - name: Cache Deno dependencies
-      run: deno cache main.ts
+      run: deno cache src/main.ts
+
 
     - name: Build (Deno does not compile like Maven but we can verify)
       run: deno check main.ts
