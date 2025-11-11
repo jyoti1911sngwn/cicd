@@ -11,17 +11,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Deno
-      uses: denoland/setup-deno@v1
+    - name: Setup Node
+      uses: actions/setup-node@v4
       with:
-        deno-version: v1.x
+        node-version: 18
 
-    - name: Cache Deno dependencies
-      run: deno cache src/index.js
+    - name: Install Dependencies
+      run: npm install
 
-
-    - name: Build (Deno does not compile like Maven but we can verify)
-      run: deno check index.js
+    - name: Build App
+      run: npm run build
 
   security-check:
     runs-on: self-hosted
@@ -54,13 +53,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Deno
-      uses: denoland/setup-deno@v1
+    - name: Setup Node
+      uses: actions/setup-node@v4
       with:
-        deno-version: v1.x
+        node-version: 18
 
-    - name: Run Deno Tests
-      run: deno test --allow-all
+    - name: Run Tests
+      run: npm test --watchAll=false
 
   build_project_and_sonar_scan:
     runs-on: self-hosted
@@ -69,19 +68,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Deno
-      uses: denoland/setup-deno@v1
+    - name: Setup Node
+      uses: actions/setup-node@v4
       with:
-        deno-version: v1.x
+        node-version: 18
 
-    - name: Bundle the application
-      run: deno bundle main.ts dist/bundle.js
+    - name: Build App Again (for artifact)
+      run: npm run build
 
-    - name: Upload bundle artifact
+    - name: Upload Build Folder
       uses: actions/upload-artifact@v4
       with:
-        name: deno-bundle
-        path: dist/bundle.js
+        name: react-build
+        path: build
 
     - uses: actions/checkout@v4
       with:
@@ -112,8 +111,8 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
-        name: deno-bundle
-        path: app
+        name: react-build
+        path: app/build
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3
